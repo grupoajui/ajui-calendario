@@ -152,7 +152,7 @@ header{background:var(--accent);padding:1rem 1.2rem;display:flex;align-items:cen
 // ═══════════════════════════════════════════════
 // CONFIGURACIÓN
 // ═══════════════════════════════════════════════
-var SHEET_ID = "1LdvKCi3hOo9z-9z2nROc5Z4v4u7ZEyMr";
+var SHEET_ID = "19UFECP5F9YTMDpO8TZUQXKRehLHRU2cAkgllDtuzsxI";
 
 // Columnas por hoja (índice 0 = columna A)
 // 2025 NO tiene HORA ni TIPO
@@ -186,6 +186,20 @@ var ei = 0, ed = [], eventoEditando = null;
 // CARGA DE DATOS
 // ═══════════════════════════════════════════════
 function cargarTodo() {
+  // Inicializar fechas cerradas vacias
+  HOJAS.forEach(function(h){ fechasCerradas[h.anio] = []; });
+  
+  // Cargar pestaña Fechas Cerradas primero
+  var urlCerradas = "https://docs.google.com/spreadsheets/d/" + SHEET_ID +
+    "/gviz/tq?tqx=out:csv&sheet=Fechas%20Cerradas&_=" + Date.now();
+  fetch(urlCerradas)
+    .then(function(r){ return r.text(); })
+    .then(function(csv){ parsearFechasCerradas(csv); })
+    .catch(function(){})
+    .finally(function(){ cargarHojas(); });
+}
+
+function cargarHojas() {
   cargados = 0;
   HOJAS.forEach(function(h) {
     var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID +
@@ -194,17 +208,43 @@ function cargarTodo() {
       .then(function(r){ return r.text(); })
       .then(function(csv){
         var p = parsearCSV(csv, h.anio, h.cols);
-        todosEventos[h.anio]    = p.eventos;
-        fechasCerradas[h.anio]  = p.cerrados;
+        todosEventos[h.anio] = p.eventos;
         cargados++;
         if(cargados === HOJAS.length) iniciar();
       })
       .catch(function(){
-        todosEventos[h.anio] = []; fechasCerradas[h.anio] = [];
+        todosEventos[h.anio] = [];
         cargados++;
         if(cargados === HOJAS.length) iniciar();
       });
   });
+}
+
+function parsearFechasCerradas(csv) {
+  var lineas = csv.split("
+");
+  for(var i = 1; i < lineas.length; i++) {
+    var c = parsearLinea(lineas[i]);
+    if(!c || c.length < 4) continue;
+    var desde  = limpiar(c[0]);
+    var hasta  = limpiar(c[1]);
+    var motivo = limpiar(c[2]);
+    var anio   = parseInt(limpiar(c[3]));
+    if(!desde || !anio) continue;
+    var fdDesde = parsearFecha(desde);
+    var fdHasta = hasta ? parsearFecha(hasta) : fdDesde;
+    if(!fdDesde) continue;
+    if(!fdHasta) fdHasta = fdDesde;
+    // Generar todos los dias del rango
+    var dias = [];
+    var dStart = new Date(anio, fdDesde.mes-1, fdDesde.dia);
+    var dEnd   = new Date(anio, fdHasta.mes-1, fdHasta.dia);
+    for(var d = new Date(dStart); d <= dEnd; d.setDate(d.getDate()+1)) {
+      dias.push({ dia: d.getDate(), mes: d.getMonth()+1 });
+    }
+    if(!fechasCerradas[anio]) fechasCerradas[anio] = [];
+    fechasCerradas[anio].push({ texto: motivo, dias: dias });
+  }
 }
 
 function parsearCSV(csv, anio, cols) {
