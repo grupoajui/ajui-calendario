@@ -139,6 +139,7 @@ header{background:var(--accent);padding:1rem 1.2rem;display:flex;align-items:cen
 <div class="toast" id="toast"></div>
 <script>
 var SHEET_ID = "19UFECP5F9YTMDpO8TZUQXKRehLHRU2cAkgllDtuzsxI";
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBpoVUzkJI3ujx-2MPb3QhMSLGIQINHAkuH_KXWwPJIwEslrPY0Xq9L4eMY-xBkKGj/exec";
 var HOJAS = [
   {nombre:"GENERAL 2025 - Registro de Actuaciones AJUI", anio:2025, cols:{fecha:0,localidad:1,hora:-1,tipo:-1,precio:2,sonido:3,costeSonido:4,gastos:5,comisiones:6,fondo:7,ganancia:8,porComp:9,nota:10}},
   {nombre:"2026 - Actuaciones AJUI", anio:2026, cols:{fecha:0,localidad:1,hora:2,tipo:3,precio:4,sonido:5,costeSonido:6,gastos:7,comisiones:8,fondo:9,ganancia:10,porComp:11,nota:12}},
@@ -426,37 +427,51 @@ function guardarEvento() {
   if (!fechaStr || !localidad) { mostrarToast("Fecha y localidad son obligatorias"); return; }
   var fecha = parsearFecha(fechaStr);
   if (!fecha) { mostrarToast("Formato: 15 de marzo"); return; }
-  var nuevo = {
-    fila: eventoEditando ? eventoEditando.fila : 9999,
-    dia: fecha.dia, mes: fecha.mes, anio: anioActual,
-    fechaStr: fecha.dia + " de " + MESES_MIN[fecha.mes-1] + " de " + anioActual,
-    localidad: localidad, hora: gv("f-hora"), tipo: gv("f-tipo"),
-    precio: num(gv("f-precio")), sonido: gv("f-sonido"),
-    costeSonido: num(gv("f-costes")), gastos: num(gv("f-gastos")),
-    comisiones: num(gv("f-comisiones")), fondo: num(gv("f-fondo")),
-    ganancia: num(gv("f-ganancia")), porComp: num(gv("f-porcomp")),
-    nota: document.getElementById("f-nota") ? document.getElementById("f-nota").value : ""
+  var nota = document.getElementById("f-nota") ? document.getElementById("f-nota").value : "";
+  var valores = [
+    fechaStr, localidad, gv("f-hora"), gv("f-tipo"),
+    gv("f-precio"), gv("f-sonido"), gv("f-costes"),
+    gv("f-gastos"), gv("f-comisiones"), gv("f-fondo"),
+    gv("f-ganancia"), gv("f-porcomp"), nota
+  ];
+  var payload = {
+    accion: eventoEditando ? "editar" : "anadir",
+    anio: anioActual,
+    fila: eventoEditando ? eventoEditando.fila : null,
+    valores: valores
   };
-  if (eventoEditando) {
-    var idx = (todosEventos[anioActual] || []).indexOf(eventoEditando);
-    if (idx !== -1) todosEventos[anioActual][idx] = nuevo;
-  } else {
-    if (!todosEventos[anioActual]) todosEventos[anioActual] = [];
-    todosEventos[anioActual].push(nuevo);
-  }
-  cerrarModal();
-  renderCalendario(anioActual);
-  mostrarToast("Guardado. Actualiza tambien el Excel");
+  mostrarToast("Guardando...");
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }).then(function() {
+    mostrarToast("Guardado en el Excel");
+    cerrarModal();
+    setTimeout(function() { cargarTodo(); }, 2000);
+  }).catch(function() {
+    mostrarToast("Error al guardar. Intentalo de nuevo");
+  });
 }
 
 function borrarEvento() {
   if (!confirm("Borrar esta actuacion?")) return;
-  var evs = todosEventos[anioActual] || [];
-  var idx = evs.indexOf(ed[ei]);
-  if (idx !== -1) evs.splice(idx, 1);
-  cerrarModal();
-  renderCalendario(anioActual);
-  mostrarToast("Eliminado. Actualiza tambien el Excel");
+  var payload = {
+    accion: "borrar",
+    anio: anioActual,
+    fila: ed[ei].fila,
+    valores: []
+  };
+  mostrarToast("Borrando...");
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }).then(function() {
+    mostrarToast("Borrado del Excel");
+    cerrarModal();
+    setTimeout(function() { cargarTodo(); }, 2000);
+  }).catch(function() {
+    mostrarToast("Error al borrar. Intentalo de nuevo");
+  });
 }
 
 function renderInformes(anio) {
