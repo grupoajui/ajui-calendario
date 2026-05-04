@@ -212,15 +212,16 @@ function parsearCSV(csv, anio, cols) {
   for(var i = 1; i < lineas.length; i++) {
     var c = parsearLinea(lineas[i]);
     if(!c || !c.length) continue;
-    var col0 = limpiar(c[cols.fecha]);
-    if(!col0) continue;
-    var upper = col0.toUpperCase();
-    // Detectar fecha cerrada
-    if(upper.indexOf("CERRADA") !== -1 || upper.indexOf("CERRADO") !== -1) {
-      var rango = parsearRango(col0);
-      if(rango && rango.length) cerrados.push({ texto: col0, dias: rango });
+    // Buscar FECHA CERRADA en toda la fila (celdas fusionadas pueden venir en cualquier columna)
+    var filaCompleta = c.map(function(x){return limpiar(x);}).join(" ");
+    var upperFila = filaCompleta.toUpperCase();
+    if(upperFila.indexOf("CERRADA") !== -1 || upperFila.indexOf("CERRADO") !== -1) {
+      var rango = parsearRango(filaCompleta);
+      if(rango && rango.length) cerrados.push({ texto: filaCompleta.replace(/\s+/g," ").trim(), dias: rango });
       continue;
     }
+    var col0 = limpiar(c[cols.fecha]);
+    if(!col0) continue;
     var localidad = limpiar(c[cols.localidad] || "");
     if(!localidad) continue;
     var fecha = parsearFecha(col0);
