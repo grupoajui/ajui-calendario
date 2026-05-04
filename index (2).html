@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>AJUI · Agenda</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;1,300&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#faf9f6;--surface:#fff;--border:#e8e4dc;--accent:#2d5a3d;--accent2:#c4622d;--text:#1c1c1a;--muted:#8a8680;--light:#f0ede6;--red:#c0392b;--red-light:#fdf0ee;--radius:14px}
+.dark{--bg:#0f1210;--surface:#1a1f1c;--border:#2a3028;--accent:#4caf72;--accent2:#e07848;--text:#e8f0ea;--muted:#6a7a6e;--light:#1e261f;--red:#e05040;--red-light:#2a1a18}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;min-height:100vh;transition:background .3s,color .3s}
+header{background:var(--accent);padding:1.1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap;position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.header-logo{height:44px;object-fit:contain;filter:brightness(0) invert(1);opacity:.92}
+.header-center{text-align:center;flex:1}
+.header-center h1{font-family:"Fraunces",serif;font-size:clamp(1.1rem,3.5vw,1.6rem);color:#fff;font-weight:300;letter-spacing:.02em}
+.header-center p{color:rgba(255,255,255,.5);font-size:.7rem;margin-top:.1rem}
+.btn-icon{background:rgba(255,255,255,.15);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.btn-icon:hover{background:rgba(255,255,255,.3)}
+.tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto}
+.tab{padding:.65rem 1.2rem;font-size:.8rem;font-weight:600;color:var(--muted);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;font-family:"DM Sans",sans-serif}
+.tab:hover{color:var(--accent)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.year-bar{display:flex;justify-content:center;gap:.5rem;padding:.8rem 1rem;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.year-btn{background:var(--light);border:1.5px solid var(--border);color:var(--muted);font-family:"DM Sans",sans-serif;font-size:.78rem;font-weight:600;padding:.38rem 1rem;border-radius:999px;cursor:pointer;transition:all .18s}
+.year-btn:hover{border-color:var(--accent);color:var(--accent)}
+.year-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.stats{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;padding:.9rem 1rem .3rem;max-width:960px;margin:0 auto}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.6rem .9rem;text-align:center;flex:1;min-width:90px;max-width:150px}
+.stat .n{font-family:"Fraunces",serif;font-size:1.25rem;font-weight:600;color:var(--accent);line-height:1}
+.stat .l{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:.18rem}
+.cal{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center;padding:.8rem 1rem 5rem;max-width:1080px;margin:0 auto}
+.mes-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;width:276px}
+.mes-titulo{font-family:"Fraunces",serif;font-size:.85rem;font-weight:600;text-align:center;margin-bottom:.75rem;color:var(--text);text-transform:uppercase;letter-spacing:.07em}
+.grid-sem,.grid-dias{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.grid-sem{margin-bottom:3px}
+.grid-sem div{text-align:center;font-size:.56rem;color:var(--muted);font-weight:600;padding:2px 0;letter-spacing:.03em}
+.c{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:.69rem;border-radius:6px;color:var(--muted);position:relative;font-weight:400;opacity:.38}
+.ev{background:#eef5f1;color:var(--text);cursor:pointer;font-weight:600;border:1.5px solid #c8dfd0;opacity:1;transition:all .15s}
+.dark .ev{background:#1e3028;border-color:#2d5040}
+.ev:hover{background:var(--accent);color:#fff;border-color:var(--accent);transform:scale(1.1)}
+.cerrado{background:var(--red-light);color:var(--red);cursor:pointer;font-weight:700;border:1.5px solid var(--red);opacity:1;font-size:.58rem;transition:all .15s;line-height:1}
+.cerrado:hover{background:var(--red);color:#fff;transform:scale(1.08)}
+.badge{position:absolute;top:1px;right:1px;background:var(--accent2);color:#fff;font-size:.43rem;font-weight:700;border-radius:999px;width:10px;height:10px;display:flex;align-items:center;justify-content:center}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:300;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px)}
+.overlay.on{display:flex}
+.modal{background:var(--surface);border-radius:18px;padding:1.6rem;max-width:430px;width:100%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.22);animation:up .2s ease;max-height:90vh;overflow-y:auto}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.modal-close{position:absolute;top:.85rem;right:.85rem;background:var(--light);border:none;color:var(--muted);width:28px;height:28px;border-radius:50%;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.modal-close:hover{background:var(--accent);color:#fff}
+.modal-tag{display:inline-block;background:#eef5f1;color:var(--accent);font-size:.62rem;font-weight:700;padding:.17rem .52rem;border-radius:999px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem}
+.dark .modal-tag{background:#1e3028}
+.modal-tag.rojo{background:var(--red-light);color:var(--red)}
+.dark .modal-tag.rojo{background:#2a1a18}
+.modal-lugar{font-family:"Fraunces",serif;font-size:1.25rem;font-weight:600;color:var(--text);margin-bottom:.15rem;line-height:1.2;padding-right:2rem}
+.modal-fecha{font-size:.76rem;color:var(--muted);margin-bottom:1rem}
+.divider{height:1px;background:var(--border);margin:.75rem 0}
+.fila{display:flex;justify-content:space-between;align-items:center;padding:.33rem 0;font-size:.79rem}
+.fila .lbl{color:var(--muted)}
+.fila .val{font-weight:600;color:var(--text)}
+.fila .val.verde{color:var(--accent)}
+.fila .val.rojo{color:var(--red)}
+.nota-box{margin-top:.75rem;background:#fffbf0;border-left:3px solid #e8b84b;padding:.55rem .8rem;border-radius:0 8px 8px 0;font-size:.77rem;color:var(--text);line-height:1.5}
+.dark .nota-box{background:#1e1a0e}
+.cerrado-box{background:var(--red-light);border-left:3px solid var(--red);padding:.75rem .9rem;border-radius:0 10px 10px 0;margin-bottom:.5rem}
+.cerrado-box p{font-size:.84rem;color:var(--red);font-weight:600;line-height:1.6}
+.nav-ev{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem}
+.nav-ev button{flex:1;min-width:88px;background:var(--light);border:1.5px solid var(--border);color:var(--muted);padding:.3rem .42rem;border-radius:8px;cursor:pointer;font-size:.68rem;font-family:"DM Sans",sans-serif;font-weight:500;transition:all .15s}
+.nav-ev button.on{background:#eef5f1;border-color:var(--accent);color:var(--accent);font-weight:600}
+.dark .nav-ev button.on{background:#1e3028}
+.aviso{font-size:.68rem;color:var(--muted);margin-bottom:.42rem;font-style:italic}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-top:.75rem}
+.form-grid .full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:.22rem}
+.form-group label{font-size:.64rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.form-group input,.form-group select,.form-group textarea{background:var(--light);border:1.5px solid var(--border);border-radius:8px;padding:.42rem .55rem;font-size:.8rem;color:var(--text);font-family:"DM Sans",sans-serif;transition:border .15s;width:100%}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:55px}
+.btn-row{display:flex;gap:.45rem;margin-top:.9rem;flex-wrap:wrap}
+.btn{padding:.48rem .9rem;border-radius:8px;border:none;font-family:"DM Sans",sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s;flex:1}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{opacity:.88}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{opacity:.88}
+.btn-secondary{background:var(--light);color:var(--muted);border:1.5px solid var(--border)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-add{position:fixed;bottom:1.4rem;right:1.4rem;background:var(--accent);color:#fff;width:50px;height:50px;border-radius:50%;border:none;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;transition:all .15s;z-index:40}
+.btn-add:hover{transform:scale(1.1)}
+.informes-wrap{max-width:960px;margin:0 auto;padding:.9rem}
+.informe-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;margin-bottom:.9rem}
+.informe-section h3{font-family:"Fraunces",serif;font-size:.95rem;font-weight:600;color:var(--text);margin-bottom:.9rem;border-bottom:1px solid var(--border);padding-bottom:.55rem}
+.informe-tabla{width:100%;border-collapse:collapse;font-size:.78rem}
+.informe-tabla th{text-align:left;color:var(--muted);font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;padding:.38rem .45rem;border-bottom:1px solid var(--border)}
+.informe-tabla td{padding:.45rem .45rem;border-bottom:1px solid var(--border)}
+.informe-tabla tr:last-child td{border-bottom:none}
+.num{text-align:right}
+.verde{color:var(--accent);font-weight:600}
+.bar-wrap{display:flex;align-items:center}
+.bar{height:7px;border-radius:999px;background:var(--accent);min-width:2px}
+.btn-pdf{background:var(--accent2);color:#fff;border:none;padding:.5rem 1.1rem;border-radius:8px;font-family:"DM Sans",sans-serif;font-weight:600;font-size:.78rem;cursor:pointer;margin-bottom:.9rem;transition:opacity .15s}
+.btn-pdf:hover{opacity:.85}
+.loader{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.spinner{width:26px;height:26px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto .7rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.vacio{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:.88rem}
+.toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:.55rem 1.1rem;border-radius:999px;font-size:.78rem;font-weight:600;z-index:500;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+@media(max-width:360px){.modal{padding:1.1rem}.modal-lugar{font-size:1.1rem}.form-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="AJUI" class="header-logo" onerror="this.style.display='none'">
+  <div class="header-center">
+    <h1>Agenda de Actuaciones</h1>
+    <p>Toca un día para ver los detalles</p>
+  </div>
+  <div style="display:flex;gap:.4rem">
+    <button class="btn-icon" id="btnDark" onclick="toggleDark()" title="Modo oscuro">🌙</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="cambiarTab('calendario',this)">📅 Calendario</button>
+  <button class="tab" onclick="cambiarTab('informes',this)">📊 Informes</button>
+</div>
+
+<div id="vistaCalendario">
+  <div class="year-bar" id="yearBar"></div>
+  <div class="stats" id="stats"></div>
+  <div class="cal" id="cal"><div class="loader"><div class="spinner"></div>Cargando…</div></div>
+</div>
+
+<div id="vistaInformes" style="display:none">
+  <div class="informes-wrap" id="informesContent"></div>
+</div>
+
+<button class="btn-add" id="btnAdd" onclick="abrirFormNuevo()" title="Añadir actuación">+</button>
+
+<div class="overlay" id="overlay" onclick="cerrarModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="cerrarModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var SHEET_ID = "1LdvKCi3hOo9z-9z2nROc5Z4v4u7ZEyMr";
+var HOJAS = [
+  { nombre: "GENERAL 2025 - Registro de Actuaciones AJUI", anio: 2025 },
+  { nombre: "2026 - Actuaciones AJUI", anio: 2026 },
+  { nombre: "2027 - Actuaciones AJUI", anio: 2027 }
+];
+var MESES_NOM = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+var MESES_MIN = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+var SEMS = ["L","M","X","J","V","S","D"];
+var todosEventos = {}, fechasCerradas = {};
+var cargados = 0, anioActual = 2026, tabActual = "calendario";
+var ei = 0, ed = [], eventoEditando = null;
+
+function cargarTodo() {
+  cargados = 0;
+  HOJAS.forEach(function(h) {
+    var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID +
+      "/gviz/tq?tqx=out:csv&sheet=" + encodeURIComponent(h.nombre) + "&_=" + Date.now();
+    fetch(url).then(function(r){ return r.text(); }).then(function(csv){
+      var p = parsearCSV(csv, h.anio);
+      todosEventos[h.anio] = p.eventos;
+      fechasCerradas[h.anio] = p.cerrados;
+      cargados++;
+      if(cargados === HOJAS.length) iniciar();
+    }).catch(function(){
+      todosEventos[h.anio] = []; fechasCerradas[h.anio] = [];
+      cargados++;
+      if(cargados === HOJAS.length) iniciar();
+    });
+  });
+}
+
+function parsearCSV(csv, anio) {
+  var lineas = csv.split("\n"), eventos = [], cerrados = [];
+  for(var i = 1; i < lineas.length; i++) {
+    var cols = parsearLinea(lineas[i]);
+    if(!cols || !cols.length) continue;
+    var col0 = limpiar(cols[0]);
+    if(!col0) continue;
+    var upper = col0.toUpperCase();
+    if(upper.indexOf("CERRADA") !== -1 || upper.indexOf("CERRADO") !== -1) {
+      var rango = parsearRango(col0, anio);
+      if(rango && rango.length) cerrados.push({ texto: col0, dias: rango });
+      continue;
+    }
+    var localidad = limpiar(cols[1] || "");
+    if(!localidad) continue;
+    var fecha = parsearFecha(col0);
+    if(!fecha) continue;
+    eventos.push({
+      fila: i+1, dia: fecha.dia, mes: fecha.mes, anio: anio,
+      fechaStr: fecha.dia+" de "+MESES_MIN[fecha.mes-1]+" de "+anio,
+      localidad: localidad,
+      hora: limpiar(cols[2]||""), tipo: limpiar(cols[3]||""),
+      precio: num(cols[4]), sonido: limpiar(cols[5]||""),
+      costeSonido: num(cols[6]), gastos: num(cols[7]),
+      comisiones: num(cols[8]), fondo: num(cols[9]),
+      ganancia: num(cols[10]), porComp: num(cols[11]),
+      nota: limpiar(cols[12]||"")
+    });
+  }
+  return { eventos: eventos, cerrados: cerrados };
+}
+
+function parsearRango(texto, anio) {
+  var t = texto.toLowerCase(), dias = [];
+  var m = t.match(/(\d+)\s+al\s+(\d+)\s+de\s+([a-záéíóúü]+)/);
+  if(m) {
+    var desde = parseInt(m[1]), hasta = parseInt(m[2]);
+    var mes = MESES_MIN.indexOf(m[3]) + 1;
+    if(mes > 0) for(var d = desde; d <= hasta; d++) dias.push({dia:d, mes:mes});
+    return dias;
+  }
+  var m2 = t.match(/(\d+)\s+de\s+([a-záéíóúü]+)/);
+  if(m2) {
+    var mes2 = MESES_MIN.indexOf(m2[2]) + 1;
+    if(mes2 > 0) dias.push({dia:parseInt(m2[1]), mes:mes2});
+  }
+  return dias;
+}
+
+function parsearLinea(l) {
+  var res=[], cur="", dentro=false;
+  for(var i=0;i<l.length;i++){
+    var c=l[i];
+    if(c==='"'){dentro=!dentro;}
+    else if(c===','&&!dentro){res.push(cur);cur="";}
+    else{cur+=c;}
+  }
+  res.push(cur); return res;
+}
+function limpiar(s){return String(s||"").replace(/^"|"$/g,"").trim();}
+function num(s){var n=parseFloat(limpiar(s).replace(",","."));return isNaN(n)?0:n;}
+function parsearFecha(str){
+  var m=str.toLowerCase().match(/(\d{1,2})\s+de\s+([a-záéíóúü]+)/);
+  if(m){var dia=parseInt(m[1]),mes=MESES_MIN.indexOf(m[2])+1;if(dia&&mes>0)return{dia:dia,mes:mes};}
+  var m2=str.match(/(\d{1,2})[\/\-](\d{1,2})/);
+  if(m2)return{dia:parseInt(m2[1]),mes:parseInt(m2[2])};
+  return null;
+}
+
+function iniciar() {
+  var yb = document.getElementById("yearBar"); yb.innerHTML = "";
+  HOJAS.forEach(function(h){
+    var btn = document.createElement("button");
+    btn.className = "year-btn" + (h.anio===anioActual?" active":"");
+    btn.textContent = h.anio;
+    btn.onclick = function(){
+      document.querySelectorAll(".year-btn").forEach(function(b){b.classList.remove("active");});
+      btn.classList.add("active"); anioActual = h.anio;
+      if(tabActual==="calendario") renderCalendario(h.anio);
+      else renderInformes(h.anio);
+    };
+    yb.appendChild(btn);
+  });
+  renderCalendario(anioActual);
+}
+
+function renderCalendario(anio) {
+  var evs = todosEventos[anio]||[], cerr = fechasCerradas[anio]||[];
+  var ing = evs.reduce(function(s,e){return s+e.precio;},0);
+  var net = evs.reduce(function(s,e){return s+e.ganancia;},0);
+  var ms={}; evs.forEach(function(e){ms[e.mes]=1;});
+  document.getElementById("stats").innerHTML =
+    stat(evs.length,"Actuaciones")+stat(Object.keys(ms).length,"Meses")+
+    stat(eu(ing,0),"Ingresos")+stat(eu(net,0),"Ganancia neta");
+
+  var porMes = {};
+  evs.forEach(function(e){
+    if(!porMes[e.mes])porMes[e.mes]={mes:e.mes,dias:{}};
+    if(!porMes[e.mes].dias[e.dia])porMes[e.mes].dias[e.dia]=[];
+    porMes[e.mes].dias[e.dia].push(e);
+  });
+  var cerMap = {};
+  cerr.forEach(function(c){
+    c.dias.forEach(function(d){
+      cerMap[d.mes+"-"+d.dia] = c;
+      if(!porMes[d.mes])porMes[d.mes]={mes:d.mes,dias:{}};
+    });
+  });
+
+  var mOrd = Object.keys(porMes).map(Number).sort(function(a,b){return a-b;});
+  if(!mOrd.length){document.getElementById("cal").innerHTML='<div class="vacio">No hay datos para '+anio+'</div>';return;}
+
+  var html = "";
+  mOrd.forEach(function(mes){
+    var m = porMes[mes];
+    var pJS = new Date(anio,mes-1,1).getDay();
+    var pLun = (pJS+6)%7;
+    var ult = new Date(anio,mes,0).getDate();
+    var celdas = "";
+    for(var v=0;v<pLun;v++) celdas+='<div class="c"></div>';
+    for(var d=1;d<=ult;d++){
+      var ck = mes+"-"+d;
+      if(cerMap[ck]){
+        celdas+='<div class="c cerrado" onclick="abrirCerrado(\''+ck+'\','+anio+')">✕</div>';
+      } else if(m.dias&&m.dias[d]){
+        var n=m.dias[d].length;
+        celdas+='<div class="c ev" onclick="abrirEvento('+anio+','+mes+','+d+')">'+d+(n>1?'<span class="badge">'+n+'</span>':'')+' </div>';
+      } else {
+        celdas+='<div class="c">'+d+'</div>';
+      }
+    }
+    html+='<div class="mes-card"><div class="mes-titulo">'+MESES_NOM[mes]+'</div>'+
+      '<div class="grid-sem">'+SEMS.map(function(s){return'<div>'+s+'</div>';}).join('')+'</div>'+
+      '<div class="grid-dias">'+celdas+'</div></div>';
+  });
+  document.getElementById("cal").innerHTML = html;
+}
+
+function stat(n,l){return'<div class="stat"><div class="n">'+n+'</div><div class="l">'+l+'</div></div>';}
+
+function abrirCerrado(key, anio) {
+  var cerr = fechasCerradas[anio]||[];
+  var pts = key.split("-"), mes=parseInt(pts[0]), dia=parseInt(pts[1]);
+  var c = null;
+  for(var i=0;i<cerr.length;i++){
+    for(var j=0;j<cerr[i].dias.length;j++){
+      if(cerr[i].dias[j].mes===mes&&cerr[i].dias[j].dia===dia){c=cerr[i];break;}
+    }
+    if(c)break;
+  }
+  if(!c)return;
+  var h='<div class="modal-tag rojo">🚫 Fecha Cerrada</div>';
+  h+='<div class="cerrado-box"><p>'+c.texto+'</p></div>';
+  document.getElementById("modalContent").innerHTML=h;
+  document.getElementById("overlay").classList.add("on");
+}
+
+function abrirEvento(anio,mes,dia){
+  ed=(todosEventos[anio]||[]).filter(function(e){return e.mes===mes&&e.dia===dia;});
+  if(!ed.length)return;
+  ei=0; renderModalVer();
+  document.getElementById("overlay").classList.add("on");
+}
+
+function renderModalVer(){
+  var e=ed[ei], h="";
+  if(ed.length>1){
+    h+='<p class="aviso">'+ed.length+' actuaciones este día</p><div class="nav-ev">';
+    for(var i=0;i<ed.length;i++){
+      h+='<button class="'+(i===ei?"on":"")+'" onclick="ch('+i+')">'+(i+1)+'. '+ed[i].localidad+(ed[i].hora?' · '+ed[i].hora:'')+' </button>';
+    }
+    h+='</div>';
+  }
+  h+='<div class="modal-tag">'+(e.tipo||"Actuación")+'</div>';
+  h+='<div class="modal-lugar">'+e.localidad+'</div>';
+  h+='<div class="modal-fecha">📅 '+e.fechaStr+(e.hora?' &nbsp;·&nbsp; 🕐 '+e.hora:'')+'</div>';
+  h+='<div class="divider"></div>';
+  h+=fi("Precio contratado",euV(e.precio),false);
+  if(e.sonido)h+=fi("Equipo de sonido",e.sonido,false);
+  if(e.costeSonido)h+=fi("Coste sonido",euV(e.costeSonido),"rojo");
+  if(e.gastos)h+=fi("Gastos generales",euV(e.gastos),"rojo");
+  if(e.comisiones)h+=fi("Comisiones",euV(e.comisiones),"rojo");
+  h+='<div class="divider"></div>';
+  h+=fi("Fondo grupo (9%)",euV(e.fondo),false);
+  h+=fi("Ganancia total",euV(e.ganancia),"verde");
+  h+=fi("Por componente",euV(e.porComp),"verde");
+  if(e.nota)h+='<div class="nota-box">📝 '+e.nota+'</div>';
+  h+='<div class="btn-row"><button class="btn btn-secondary" onclick="abrirFormEditar()">✏️ Editar</button><button class="btn btn-danger" onclick="borrarEvento()">🗑️ Borrar</button></div>';
+  document.getElementById("modalContent").innerHTML=h;
+}
+
+function ch(i){ei=i;renderModalVer();}
+
+function abrirFormNuevo(){
+  eventoEditando=null;
+  document.getElementById("modalContent").innerHTML=formularioHTML(null);
+  document.getElementById("overlay").classList.add("on");
+}
+function abrirFormEditar(){
+  eventoEditando=ed[ei];
+  document.getElementById("modalContent").innerHTML=formularioHTML(eventoEditando);
+}
+
+function formularioHTML(ev){
+  var h='<div class="modal-tag">'+(ev?"Editar":"Nueva actuación")+'</div>';
+  h+='<div class="modal-lugar" style="margin-bottom:.8rem">'+(ev?"✏️ Editar":"➕ Añadir actuación")+'</div>';
+  h+='<div class="form-grid">';
+  h+=fg("Fecha (ej: 15 de marzo)","text","f-fecha",ev?ev.fechaStr.replace(" de "+ev.anio,""):"","full");
+  h+=fg("Localidad","text","f-local",ev?ev.localidad:"","full");
+  h+=fg("Hora","text","f-hora",ev?ev.hora:"");
+  h+=fg("Tipo de evento","text","f-tipo",ev?ev.tipo:"");
+  h+=fg("Precio (€)","number","f-precio",ev&&ev.precio?ev.precio:"");
+  h+=fg("Sonido (sí/no)","text","f-sonido",ev?ev.sonido:"");
+  h+=fg("Coste sonido (€)","number","f-costes",ev&&ev.costeSonido?ev.costeSonido:"");
+  h+=fg("Gastos (€)","number","f-gastos",ev&&ev.gastos?ev.gastos:"");
+  h+=fg("Comisiones (€)","number","f-comisiones",ev&&ev.comisiones?ev.comisiones:"");
+  h+=fg("Fondo grupo (€)","number","f-fondo",ev&&ev.fondo?ev.fondo:"");
+  h+=fg("Ganancia total (€)","number","f-ganancia",ev&&ev.ganancia?ev.ganancia:"");
+  h+=fg("Por componente (€)","number","f-porcomp",ev&&ev.porComp?ev.porComp:"");
+  h+='<div class="form-group full"><label>Comentarios</label><textarea id="f-nota">'+(ev?ev.nota:"")+'</textarea></div>';
+  h+='</div>';
+  h+='<div class="btn-row"><button class="btn btn-primary" onclick="guardarEvento()">💾 Guardar en Excel</button><button class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button></div>';
+  return h;
+}
+
+function fg(label,type,id,val,cls){
+  return'<div class="form-group'+(cls?" "+cls:"")+'">'+'<label>'+label+'</label>'+'<input type="'+type+'" id="'+id+'" value="'+val+'">'+'</div>';
+}
+function gv(id){var el=document.getElementById(id);return el?el.value:"";}
+
+function guardarEvento(){
+  var fechaStr=gv("f-fecha").trim(), localidad=gv("f-local").trim();
+  if(!fechaStr||!localidad){mostrarToast("⚠️ Fecha y localidad son obligatorias");return;}
+  var fecha=parsearFecha(fechaStr);
+  if(!fecha){mostrarToast("⚠️ Formato: '15 de marzo'");return;}
+  var fila=[
+    fechaStr, localidad, gv("f-hora"), gv("f-tipo"),
+    gv("f-precio"), gv("f-sonido"), gv("f-costes"), gv("f-gastos"),
+    gv("f-comisiones"), gv("f-fondo"), gv("f-ganancia"), gv("f-porcomp"),
+    document.getElementById("f-nota")?document.getElementById("f-nota").value:""
+  ];
+  var accion = eventoEditando ? "editar (fila "+eventoEditando.fila+")" : "añadir";
+  // Actualizar localmente para feedback inmediato
+  if(eventoEditando){
+    var idx = (todosEventos[anioActual]||[]).indexOf(eventoEditando);
+    if(idx!==-1){
+      todosEventos[anioActual][idx] = Object.assign({},eventoEditando,{
+        dia:fecha.dia, mes:fecha.mes, fechaStr:fecha.dia+" de "+MESES_MIN[fecha.mes-1]+" de "+anioActual,
+        localidad:localidad, hora:gv("f-hora"), tipo:gv("f-tipo"),
+        precio:num(gv("f-precio")), sonido:gv("f-sonido"),
+        costeSonido:num(gv("f-costes")), gastos:num(gv("f-gastos")),
+        comisiones:num(gv("f-comisiones")), fondo:num(gv("f-fondo")),
+        ganancia:num(gv("f-ganancia")), porComp:num(gv("f-porcomp")),
+        nota:document.getElementById("f-nota")?document.getElementById("f-nota").value:""
+      });
+    }
+  } else {
+    if(!todosEventos[anioActual]) todosEventos[anioActual]=[];
+    todosEventos[anioActual].push({
+      fila:9999, dia:fecha.dia, mes:fecha.mes, anio:anioActual,
+      fechaStr:fecha.dia+" de "+MESES_MIN[fecha.mes-1]+" de "+anioActual,
+      localidad:localidad, hora:gv("f-hora"), tipo:gv("f-tipo"),
+      precio:num(gv("f-precio")), sonido:gv("f-sonido"),
+      costeSonido:num(gv("f-costes")), gastos:num(gv("f-gastos")),
+      comisiones:num(gv("f-comisiones")), fondo:num(gv("f-fondo")),
+      ganancia:num(gv("f-ganancia")), porComp:num(gv("f-porcomp")),
+      nota:document.getElementById("f-nota")?document.getElementById("f-nota").value:""
+    });
+  }
+  cerrarModal();
+  renderCalendario(anioActual);
+  mostrarToast("✅ Guardado en la vista · Recuerda actualizarlo también en el Excel");
+}
+
+function borrarEvento(){
+  if(!confirm("¿Borrar esta actuación de la vista?"))return;
+  var evs = todosEventos[anioActual]||[];
+  var idx = evs.indexOf(ed[ei]);
+  if(idx!==-1) evs.splice(idx,1);
+  cerrarModal();
+  renderCalendario(anioActual);
+  mostrarToast("🗑️ Eliminado de la vista · Recuerda borrarlo también en el Excel");
+}
+
+function renderInformes(anio){
+  var evs=todosEventos[anio]||[];
+  if(!evs.length){document.getElementById("informesContent").innerHTML='<div class="vacio">No hay datos para '+anio+'</div>';return;}
+  var porMes={};
+  evs.forEach(function(e){if(!porMes[e.mes])porMes[e.mes]={mes:e.mes,evs:[]};porMes[e.mes].evs.push(e);});
+  var mOrd=Object.keys(porMes).map(Number).sort(function(a,b){return a-b;});
+  var maxG=0;
+  mOrd.forEach(function(m){var g=porMes[m].evs.reduce(function(s,e){return s+e.ganancia;},0);if(g>maxG)maxG=g;});
+  var tI=evs.reduce(function(s,e){return s+e.precio;},0);
+  var tG=evs.reduce(function(s,e){return s+e.ganancia;},0);
+  var tC=evs.reduce(function(s,e){return s+e.porComp;},0);
+  var tF=evs.reduce(function(s,e){return s+e.fondo;},0);
+  var tGa=evs.reduce(function(s,e){return s+e.costeSonido+e.gastos+e.comisiones;},0);
+  var filas="";
+  mOrd.forEach(function(m){
+    var d=porMes[m];
+    var ing=d.evs.reduce(function(s,e){return s+e.precio;},0);
+    var gan=d.evs.reduce(function(s,e){return s+e.ganancia;},0);
+    var pc=d.evs.reduce(function(s,e){return s+e.porComp;},0);
+    var pct=maxG>0?Math.round((gan/maxG)*100):0;
+    filas+='<tr><td>'+MESES_NOM[m]+'</td><td class="num">'+d.evs.length+'</td><td class="num">'+eu(ing,0)+'</td><td class="num verde">'+eu(gan,0)+'</td><td class="num">'+eu(pc,0)+'</td><td><div class="bar-wrap"><div class="bar" style="width:'+pct+'px;max-width:80px"></div></div></td></tr>';
+  });
+  filas+='<tr style="border-top:2px solid var(--border)"><td><strong>TOTAL</strong></td><td class="num"><strong>'+evs.length+'</strong></td><td class="num"><strong>'+eu(tI,0)+'</strong></td><td class="num verde"><strong>'+eu(tG,0)+'</strong></td><td class="num"><strong>'+eu(tC,0)+'</strong></td><td></td></tr>';
+  var h='<button class="btn-pdf" onclick="imprimirInforme()">📄 Descargar PDF</button>';
+  h+='<div class="informe-section"><h3>📅 Resumen mensual — '+anio+'</h3><div style="overflow-x:auto"><table class="informe-tabla"><tr><th>Mes</th><th class="num">Bolos</th><th class="num">Ingresos</th><th class="num">Ganancia</th><th class="num">Por comp.</th><th>Gráfico</th></tr>'+filas+'</table></div></div>';
+  h+='<div class="informe-section"><h3>💰 Resumen económico '+anio+'</h3><table class="informe-tabla">';
+  h+='<tr><td>Ingresos brutos totales</td><td class="num">'+eu(tI)+'</td></tr>';
+  h+='<tr><td>Total gastos y deducciones</td><td class="num rojo">- '+eu(tGa)+'</td></tr>';
+  h+='<tr><td>Fondo del grupo (9%)</td><td class="num">'+eu(tF)+'</td></tr>';
+  h+='<tr><td><strong>Ganancia neta total</strong></td><td class="num verde"><strong>'+eu(tG)+'</strong></td></tr>';
+  h+='<tr><td><strong>Ganancia por componente</strong></td><td class="num verde"><strong>'+eu(tC)+'</strong></td></tr>';
+  h+='</table></div>';
+  document.getElementById("informesContent").innerHTML=h;
+}
+
+function imprimirInforme(){
+  var cont=document.getElementById("informesContent").innerHTML;
+  var w=window.open('','_blank');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Informe AJUI '+anioActual+'</title><style>body{font-family:sans-serif;padding:2rem;color:#1a1a1a}table{width:100%;border-collapse:collapse;font-size:.85rem}th{text-align:left;border-bottom:2px solid #ccc;padding:.4rem}td{padding:.4rem;border-bottom:1px solid #eee}.num{text-align:right}.verde{color:#2d5a3d;font-weight:700}.rojo{color:#c0392b}.btn-pdf{display:none}h3{margin-bottom:1rem;margin-top:1.5rem}div{margin-bottom:1rem}</style></head><body><h2>AJUI · Informe de Actuaciones '+anioActual+'</h2>'+cont+'</body></html>');
+  w.document.close();
+  setTimeout(function(){w.print();},600);
+}
+
+function cambiarTab(tab,btn){
+  tabActual=tab;
+  document.querySelectorAll(".tab").forEach(function(t){t.classList.remove("active");});
+  btn.classList.add("active");
+  document.getElementById("vistaCalendario").style.display=tab==="calendario"?"":"none";
+  document.getElementById("vistaInformes").style.display=tab==="informes"?"":"none";
+  document.getElementById("btnAdd").style.display=tab==="calendario"?"flex":"none";
+  if(tab==="informes")renderInformes(anioActual);
+}
+
+function toggleDark(){
+  document.body.classList.toggle("dark");
+  document.getElementById("btnDark").textContent=document.body.classList.contains("dark")?"☀️":"🌙";
+  localStorage.setItem("dark",document.body.classList.contains("dark")?"1":"0");
+}
+function cerrarModal(e){
+  if(e&&e.target!==document.getElementById("overlay"))return;
+  document.getElementById("overlay").classList.remove("on");
+}
+function mostrarToast(msg){
+  var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");
+  setTimeout(function(){t.classList.remove("show");},3000);
+}
+function fi(l,v,cls){return'<div class="fila"><span class="lbl">'+l+'</span><span class="val'+(cls?' '+cls:'')+'" >'+v+'</span></div>';}
+function eu(n,dec){if(isNaN(n)||n===0)return"—";return n.toLocaleString("es-ES",{style:"currency",currency:"EUR",maximumFractionDigits:dec!==undefined?dec:2});}
+function euV(n){return eu(n);}
+
+document.addEventListener("keydown",function(e){if(e.key==="Escape")document.getElementById("overlay").classList.remove("on");});
+if(localStorage.getItem("dark")==="1"){document.body.classList.add("dark");document.getElementById("btnDark").textContent="☀️";}
+setInterval(cargarTodo, 5*60*1000);
+cargarTodo();
+</script>
+</body>
+</html>
