@@ -1,0 +1,22 @@
+{
+  "name": "AJUI - Agenda de Actuaciones",
+  "short_name": "AJUI",
+  "description": "Calendario de actuaciones del grupo AJUI",
+  "start_url": "/ajui-calendario/",
+  "display": "standalone",
+  "background_color": "#faf9f6",
+  "theme_color": "#2d5a3d",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
