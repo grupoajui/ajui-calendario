@@ -1,0 +1,20 @@
+{
+  "name": "AJUI - Agenda de Actuaciones",
+  "short_name": "AJUI",
+  "description": "Gestión de actuaciones musicales del Grupo AJUI",
+  "start_url": "/ajui-calendario/",
+  "scope": "/ajui-calendario/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#2d5a3d",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["productivity", "music"],
+  "lang": "es"
+}
