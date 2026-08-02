@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AJUÍ — Diseño Concepto</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --negro:#0d0d0d;
+  --verde:#1a3d2b;
+  --verde-mid:#2d5a3d;
+  --dorado:#c9a84c;
+  --dorado-claro:#e8c97a;
+  --crema:#f5f2eb;
+  --gris:#8a8a8a;
+  --blanco:#ffffff;
+  --superficie:#1e1e1e;
+  --borde:rgba(201,168,76,0.2);
+}
+body{background:var(--negro);color:var(--blanco);font-family:'Inter',sans-serif;max-width:390px;margin:0 auto;min-height:100vh;overflow-x:hidden}
+
+/* HEADER */
+.header{background:var(--negro);padding:16px 20px 12px;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--borde)}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.logo-grupo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--dorado);letter-spacing:-0.3px}
+.logo-sub{font-size:10px;color:var(--gris);letter-spacing:0.12em;text-transform:uppercase}
+.header-icons{display:flex;gap:12px}
+.ico-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--borde);display:flex;align-items:center;justify-content:center;font-size:15px;background:rgba(201,168,76,0.06)}
+
+/* TABS */
+.tabs{display:flex;background:var(--negro);padding:0 20px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.tab{flex:1;text-align:center;padding:12px 0;font-size:12px;font-weight:500;color:var(--gris);letter-spacing:0.04em;position:relative;cursor:pointer}
+.tab.activo{color:var(--dorado)}
+.tab.activo::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--dorado);border-radius:2px}
+
+/* MES HEADER */
+.mes-header{padding:20px 20px 10px;display:flex;justify-content:space-between;align-items:center}
+.mes-titulo{font-family:'Playfair Display',serif;font-size:28px;font-weight:500;color:var(--blanco);letter-spacing:-0.5px}
+.mes-anio{font-size:12px;color:var(--gris);margin-top:2px}
+.mes-nav{display:flex;gap:8px}
+.nav-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--borde);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--dorado);background:rgba(201,168,76,0.06);cursor:pointer}
+
+/* CALENDARIO */
+.cal-wrap{padding:0 16px 16px}
+.cal-sems{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:6px}
+.cal-sem{text-align:center;font-size:10px;font-weight:600;color:rgba(138,138,138,0.6);letter-spacing:0.08em;padding:4px 0;text-transform:uppercase}
+.cal-dias{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dia{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:400;color:rgba(255,255,255,0.45);border-radius:50%;cursor:pointer;position:relative;transition:all .15s}
+.cal-dia.activo{color:var(--blanco)}
+.cal-dia.hoy{background:var(--dorado);color:var(--negro);font-weight:700}
+.cal-dia.bolo{color:var(--blanco)}
+.cal-dia.bolo::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--dorado)}
+.cal-dia.bolo-mult::after{background:var(--dorado-claro);width:6px}
+
+/* PRÓXIMOS */
+.seccion-titulo{font-size:10px;font-weight:600;color:var(--gris);letter-spacing:0.1em;text-transform:uppercase;padding:16px 20px 10px}
+.bolos-lista{padding:0 16px;display:flex;flex-direction:column;gap:10px}
+.bolo-card{background:var(--superficie);border-radius:14px;padding:14px 16px;border:1px solid rgba(255,255,255,0.06);display:flex;gap:14px;align-items:center;cursor:pointer;transition:border-color .2s}
+.bolo-card:active{border-color:var(--borde)}
+.bolo-fecha{min-width:40px;text-align:center}
+.bolo-dia-num{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--dorado);line-height:1}
+.bolo-dia-mes{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px}
+.bolo-sep{width:1px;background:var(--borde);align-self:stretch}
+.bolo-info{flex:1;min-width:0}
+.bolo-lugar{font-size:15px;font-weight:500;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bolo-detalle{font-size:12px;color:var(--gris);margin-top:3px}
+.bolo-tipo{font-size:10px;font-weight:600;color:var(--dorado);letter-spacing:0.06em;text-transform:uppercase;background:rgba(201,168,76,0.1);padding:2px 8px;border-radius:4px;margin-top:6px;display:inline-block}
+.bolo-precio{font-family:'Playfair Display',serif;font-size:18px;font-weight:500;color:var(--dorado);white-space:nowrap}
+
+/* MODAL BOLO */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;display:none;align-items:flex-end}
+.overlay.visible{display:flex}
+.modal-bolo{background:#141414;border-radius:24px 24px 0 0;width:100%;padding:24px 20px 40px;border-top:1px solid var(--borde);transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.15,1)}
+.overlay.visible .modal-bolo{transform:translateY(0)}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);margin:0 auto 20px}
+.modal-tipo-badge{font-size:10px;font-weight:700;color:var(--dorado);letter-spacing:0.1em;text-transform:uppercase;background:rgba(201,168,76,0.12);padding:4px 10px;border-radius:6px;display:inline-block;margin-bottom:10px}
+.modal-lugar{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--blanco);line-height:1.1;margin-bottom:8px}
+.modal-meta{font-size:13px;color:var(--gris);display:flex;gap:12px;margin-bottom:20px}
+.modal-divider{height:1px;background:rgba(255,255,255,0.06);margin:16px 0}
+.modal-fila{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+.modal-fila-label{font-size:13px;color:var(--gris)}
+.modal-fila-valor{font-size:14px;font-weight:500;color:var(--blanco)}
+.modal-fila-valor.dorado{color:var(--dorado);font-family:'Playfair Display',serif;font-size:16px}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}
+.btn-modal{padding:12px;border-radius:12px;border:1px solid var(--borde);font-size:13px;font-weight:500;cursor:pointer;text-align:center}
+.btn-modal.primario{background:var(--dorado);color:var(--negro);border-color:var(--dorado)}
+.btn-modal.secundario{background:transparent;color:var(--blanco)}
+.btn-modal.rojo{background:transparent;color:#e05;border-color:rgba(238,0,85,0.3)}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:390px;background:rgba(13,13,13,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--borde);display:flex;padding:10px 0 24px}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.nav-icon{font-size:20px;filter:grayscale(1);opacity:0.4;transition:all .2s}
+.nav-item.activo .nav-icon{filter:none;opacity:1}
+.nav-label{font-size:9px;font-weight:600;color:var(--gris);letter-spacing:0.06em;text-transform:uppercase}
+.nav-item.activo .nav-label{color:var(--dorado)}
+
+.pad-bottom{height:90px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="logo-grupo">AJUÍ</div>
+      <div class="logo-sub">Grupo Flamenco · Sevilla</div>
+    </div>
+    <div class="header-icons">
+      <div class="ico-btn">🔔</div>
+      <div class="ico-btn">🔍</div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab activo">Agenda</div>
+  <div class="tab">Gestión</div>
+  <div class="tab">Análisis</div>
+</div>
+
+<div class="mes-header">
+  <div>
+    <div class="mes-titulo">Agosto</div>
+    <div class="mes-anio">2026</div>
+  </div>
+  <div class="mes-nav">
+    <div class="nav-btn">‹</div>
+    <div class="nav-btn">›</div>
+  </div>
+</div>
+
+<div class="cal-wrap">
+  <div class="cal-sems">
+    <div class="cal-sem">L</div><div class="cal-sem">M</div><div class="cal-sem">X</div>
+    <div class="cal-sem">J</div><div class="cal-sem">V</div><div class="cal-sem">S</div>
+    <div class="cal-sem">D</div>
+  </div>
+  <div class="cal-dias" id="calGrid"></div>
+</div>
+
+<div class="seccion-titulo">Próximas actuaciones</div>
+<div class="bolos-lista">
+  <div class="bolo-card" onclick="abrirModal()">
+    <div class="bolo-fecha">
+      <div class="bolo-dia-num">8</div>
+      <div class="bolo-dia-mes">Ago</div>
+    </div>
+    <div class="bolo-sep"></div>
+    <div class="bolo-info">
+      <div class="bolo-lugar">Carmona</div>
+      <div class="bolo-detalle">Sábado · 21:00h</div>
+      <div class="bolo-tipo">Boda</div>
+    </div>
+    <div class="bolo-precio">1.200€</div>
+  </div>
+
+  <div class="bolo-card">
+    <div class="bolo-fecha">
+      <div class="bolo-dia-num">15</div>
+      <div class="bolo-dia-mes">Ago</div>
+    </div>
+    <div class="bolo-sep"></div>
+    <div class="bolo-info">
+      <div class="bolo-lugar">El Palmar</div>
+      <div class="bolo-detalle">Sábado · 22:00h</div>
+      <div class="bolo-tipo">Chiringuito</div>
+    </div>
+    <div class="bolo-precio">800€</div>
+  </div>
+
+  <div class="bolo-card">
+    <div class="bolo-fecha">
+      <div class="bolo-dia-num">22</div>
+      <div class="bolo-dia-mes">Ago</div>
+    </div>
+    <div class="bolo-sep"></div>
+    <div class="bolo-info">
+      <div class="bolo-lugar">Dos Hermanas</div>
+      <div class="bolo-detalle">Sábado · 20:30h</div>
+      <div class="bolo-tipo">Feria</div>
+    </div>
+    <div class="bolo-precio">950€</div>
+  </div>
+</div>
+
+<div class="pad-bottom"></div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="cerrarModal(event)">
+  <div class="modal-bolo">
+    <div class="modal-handle"></div>
+    <div class="modal-tipo-badge">Boda</div>
+    <div class="modal-lugar">Carmona</div>
+    <div class="modal-meta">
+      <span>📅 Sábado 8 de agosto</span>
+      <span>🕘 21:00h</span>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-fila">
+      <span class="modal-fila-label">Precio contratado</span>
+      <span class="modal-fila-valor dorado">1.200,00 €</span>
+    </div>
+    <div class="modal-fila">
+      <span class="modal-fila-label">Fondo grupo (9%)</span>
+      <span class="modal-fila-valor">108,00 €</span>
+    </div>
+    <div class="modal-fila">
+      <span class="modal-fila-label">Ganancia total</span>
+      <span class="modal-fila-valor">1.092,00 €</span>
+    </div>
+    <div class="modal-fila">
+      <span class="modal-fila-label">Por componente</span>
+      <span class="modal-fila-valor dorado">364,00 €</span>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-btns">
+      <div class="btn-modal primario">✏️ Editar</div>
+      <div class="btn-modal secundario">📋 Duplicar</div>
+      <div class="btn-modal secundario">📲 WhatsApp</div>
+      <div class="btn-modal rojo">🗑️ Borrar</div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item activo">
+    <div class="nav-icon">📅</div>
+    <div class="nav-label">Agenda</div>
+  </div>
+  <div class="nav-item">
+    <div class="nav-icon">📊</div>
+    <div class="nav-label">Resumen</div>
+  </div>
+  <div class="nav-item">
+    <div class="nav-icon">📈</div>
+    <div class="nav-label">Informes</div>
+  </div>
+  <div class="nav-item">
+    <div class="nav-icon">☰</div>
+    <div class="nav-label">Menú</div>
+  </div>
+</div>
+
+<script>
+// Generar calendario agosto 2026
+var grid = document.getElementById('calGrid');
+var bolos = [8,15,22,29];
+var primerDia = new Date(2026,7,1).getDay();
+var offset = (primerDia+6)%7;
+for(var i=0;i<offset;i++){
+  var e=document.createElement('div');e.className='cal-dia';grid.appendChild(e);
+}
+for(var d=1;d<=31;d++){
+  var el=document.createElement('div');
+  var cls='cal-dia activo';
+  if(bolos.includes(d)) cls+=' bolo';
+  el.className=cls;
+  el.textContent=d;
+  grid.appendChild(el);
+}
+
+function abrirModal(){
+  var o=document.getElementById('overlay');
+  o.classList.add('visible');
+}
+function cerrarModal(e){
+  if(e.target===document.getElementById('overlay')){
+    document.getElementById('overlay').classList.remove('visible');
+  }
+}
+</script>
+</body>
+</html>
