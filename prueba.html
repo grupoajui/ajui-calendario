@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AJUÍ</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --verde-prof:#0e2218;
+  --verde-mid:#1a3a26;
+  --verde-card:#152d1f;
+  --dorado:#c8a84b;
+  --dorado-soft:#e6c97a;
+  --crema:#f5f0e8;
+  --gris:#7a8c80;
+  --blanco:#ffffff;
+  --borde:rgba(200,168,75,0.18);
+  --borde-sutil:rgba(255,255,255,0.07);
+}
+body{
+  background:var(--verde-prof);
+  color:var(--blanco);
+  font-family:'DM Sans',sans-serif;
+  max-width:390px;
+  margin:0 auto;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── HEADER ── */
+.header{
+  background:linear-gradient(180deg, #0a1a10 0%, var(--verde-prof) 100%);
+  padding:52px 22px 20px;
+  position:relative;
+  overflow:hidden;
+}
+.header::before{
+  content:'';
+  position:absolute;
+  top:-60px;right:-60px;
+  width:200px;height:200px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(200,168,75,0.12) 0%, transparent 70%);
+}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start}
+.logo{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--dorado);line-height:1;letter-spacing:1px}
+.logo-sub{font-size:10px;color:var(--gris);letter-spacing:0.14em;text-transform:uppercase;margin-top:3px}
+.header-actions{display:flex;gap:10px;padding-top:4px}
+.hdr-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--borde);display:flex;align-items:center;justify-content:center;font-size:16px;background:rgba(200,168,75,0.07);cursor:pointer}
+
+/* Stats del mes en header */
+.header-stats{display:flex;gap:8px;margin-top:22px}
+.stat-pill{flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--borde-sutil);border-radius:12px;padding:10px 12px}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--dorado-soft);line-height:1}
+.stat-lbl{font-size:10px;color:var(--gris);margin-top:2px;letter-spacing:0.04em}
+
+/* ── TABS ── */
+.tabs{
+  display:flex;
+  background:var(--verde-prof);
+  border-bottom:1px solid var(--borde-sutil);
+  padding:0 6px;
+}
+.tab{
+  flex:1;text-align:center;padding:13px 0;
+  font-size:12px;font-weight:500;color:var(--gris);
+  letter-spacing:0.04em;position:relative;cursor:pointer;
+  transition:color .2s;
+}
+.tab.on{color:var(--dorado)}
+.tab.on::after{
+  content:'';position:absolute;bottom:0;left:15%;right:15%;
+  height:2px;background:var(--dorado);border-radius:2px;
+}
+
+/* ── MES NAV ── */
+.mes-nav{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:18px 22px 10px;
+}
+.mes-nombre{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--blanco)}
+.mes-anio{font-size:13px;color:var(--gris);margin-left:8px}
+.nav-flechas{display:flex;gap:6px}
+.flecha{width:34px;height:34px;border-radius:50%;border:1px solid var(--borde);display:flex;align-items:center;justify-content:center;color:var(--dorado);font-size:16px;cursor:pointer;background:rgba(200,168,75,0.05)}
+
+/* ── CALENDARIO ── */
+.cal{padding:0 16px 14px}
+.cal-sems{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px}
+.cal-s{text-align:center;font-size:10px;font-weight:600;color:rgba(122,140,128,0.7);padding:4px 0;letter-spacing:0.08em}
+.cal-dias{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.dia{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:rgba(255,255,255,0.28);
+  border-radius:50%;cursor:pointer;position:relative;
+  transition:background .15s, color .15s;
+  font-weight:400;
+}
+.dia.mes{color:rgba(255,255,255,0.55)}
+.dia.bolo{color:var(--blanco);font-weight:500}
+.dia.bolo::after{
+  content:'';position:absolute;bottom:4px;
+  width:4px;height:4px;border-radius:50%;background:var(--dorado);
+}
+.dia.hoy{background:var(--dorado);color:var(--verde-prof);font-weight:700}
+.dia.hoy::after{display:none}
+.dia.multi.bolo::after{background:var(--dorado-soft);width:6px}
+
+/* ── SECCIÓN BOLOS ── */
+.sec-header{
+  padding:16px 22px 10px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.sec-titulo{font-size:10px;font-weight:600;color:var(--gris);letter-spacing:0.1em;text-transform:uppercase}
+.sec-link{font-size:11px;color:var(--dorado)}
+
+.bolos{padding:0 14px;display:flex;flex-direction:column;gap:10px}
+
+.bolo{
+  background:var(--verde-card);
+  border-radius:16px;
+  border:1px solid var(--borde-sutil);
+  display:flex;gap:0;overflow:hidden;
+  cursor:pointer;
+  transition:border-color .2s, transform .1s;
+  position:relative;
+}
+.bolo:active{transform:scale(0.98)}
+.bolo-acento{width:3px;background:var(--dorado);flex-shrink:0;border-radius:0}
+.bolo-body{flex:1;padding:14px 14px 14px 16px;display:flex;gap:14px;align-items:center}
+.bolo-fecha-col{min-width:36px;text-align:center}
+.bolo-dia-n{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--dorado);line-height:1}
+.bolo-dia-m{font-size:9px;color:var(--gris);text-transform:uppercase;letter-spacing:0.08em;margin-top:1px}
+.bolo-sep{width:1px;background:var(--borde-sutil);align-self:stretch;margin:0 2px}
+.bolo-info{flex:1;min-width:0}
+.bolo-lugar{font-size:16px;font-weight:500;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-0.2px}
+.bolo-meta{font-size:11px;color:var(--gris);margin-top:3px}
+.bolo-badge{
+  font-size:9px;font-weight:600;color:var(--dorado);
+  letter-spacing:0.07em;text-transform:uppercase;
+  background:rgba(200,168,75,0.1);
+  padding:2px 8px;border-radius:5px;
+  margin-top:7px;display:inline-block;
+}
+.bolo-precio-col{text-align:right}
+.bolo-precio{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--dorado-soft)}
+.bolo-gan{font-size:10px;color:var(--gris);margin-top:2px}
+
+/* ── MODAL ── */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.8);
+  z-index:300;display:none;
+  align-items:flex-end;
+}
+.overlay.on{display:flex}
+.modal{
+  background:#111f18;
+  border-radius:24px 24px 0 0;
+  width:100%;
+  border-top:1px solid var(--borde);
+  transform:translateY(100%);
+  transition:transform .32s cubic-bezier(.25,.46,.45,.94);
+  max-height:88vh;
+  overflow-y:auto;
+}
+.overlay.on .modal{transform:translateY(0)}
+.modal-drag{width:38px;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);margin:14px auto 20px}
+.modal-inner{padding:0 22px 40px}
+.modal-badge{font-size:9px;font-weight:700;color:var(--dorado);letter-spacing:0.12em;text-transform:uppercase;background:rgba(200,168,75,0.1);padding:4px 10px;border-radius:6px;display:inline-block;margin-bottom:12px}
+.modal-titulo{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;color:var(--blanco);line-height:1.1;margin-bottom:8px}
+.modal-meta{font-size:13px;color:var(--gris);display:flex;gap:14px;flex-wrap:wrap}
+.modal-div{height:1px;background:var(--borde-sutil);margin:18px 0}
+.m-fila{display:flex;justify-content:space-between;align-items:center;padding:9px 0}
+.m-label{font-size:13px;color:var(--gris)}
+.m-val{font-size:14px;font-weight:500;color:var(--blanco)}
+.m-val.d{color:var(--dorado);font-family:'Cormorant Garamond',serif;font-size:18px}
+.modal-acciones{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}
+.m-btn{
+  padding:13px;border-radius:13px;
+  border:1px solid var(--borde-sutil);
+  font-size:12px;font-weight:500;
+  cursor:pointer;text-align:center;
+  color:var(--blanco);background:var(--verde-mid);
+  transition:background .15s;
+}
+.m-btn.gold{background:var(--dorado);color:var(--verde-prof);border-color:var(--dorado);font-weight:600}
+.m-btn.red{color:#ff4d6d;border-color:rgba(255,77,109,0.25);background:rgba(255,77,109,0.06)}
+.wa-btn{
+  grid-column:1/-1;padding:13px;border-radius:13px;
+  background:rgba(37,211,102,0.12);border:1px solid rgba(37,211,102,0.25);
+  color:#25d366;font-size:13px;font-weight:600;cursor:pointer;text-align:center;
+}
+
+/* ── BOTTOM NAV ── */
+.bnav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:390px;background:rgba(10,26,16,0.97);
+  backdrop-filter:blur(24px);
+  border-top:1px solid var(--borde-sutil);
+  display:flex;padding:10px 0 26px;
+  z-index:200;
+}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.ni-ico{font-size:20px;opacity:0.35;transition:opacity .2s}
+.ni.on .ni-ico{opacity:1}
+.ni-lbl{font-size:9px;font-weight:600;color:var(--gris);letter-spacing:0.07em;text-transform:uppercase}
+.ni.on .ni-lbl{color:var(--dorado)}
+
+.pb{height:90px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="logo">AJUÍ</div>
+      <div class="logo-sub">Flamenco · Sevilla</div>
+    </div>
+    <div class="header-actions">
+      <div class="hdr-btn">🔔</div>
+      <div class="hdr-btn">🔍</div>
+    </div>
+  </div>
+  <div class="header-stats">
+    <div class="stat-pill">
+      <div class="stat-num">12</div>
+      <div class="stat-lbl">Bolos agosto</div>
+    </div>
+    <div class="stat-pill">
+      <div class="stat-num">9.400€</div>
+      <div class="stat-lbl">Ingresos mes</div>
+    </div>
+    <div class="stat-pill">
+      <div class="stat-num">5</div>
+      <div class="stat-lbl">Fin sem. libres</div>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab on">Agenda</div>
+  <div class="tab">Gestión</div>
+  <div class="tab">Análisis</div>
+</div>
+
+<!-- MES -->
+<div class="mes-nav">
+  <div>
+    <span class="mes-nombre">Agosto</span>
+    <span class="mes-anio">2026</span>
+  </div>
+  <div class="nav-flechas">
+    <div class="flecha">‹</div>
+    <div class="flecha">›</div>
+  </div>
+</div>
+
+<!-- CALENDARIO -->
+<div class="cal">
+  <div class="cal-sems">
+    <div class="cal-s">L</div><div class="cal-s">M</div><div class="cal-s">X</div>
+    <div class="cal-s">J</div><div class="cal-s">V</div><div class="cal-s">S</div>
+    <div class="cal-s">D</div>
+  </div>
+  <div class="cal-dias" id="grid"></div>
+</div>
+
+<!-- BOLOS -->
+<div class="sec-header">
+  <div class="sec-titulo">Próximas actuaciones</div>
+  <div class="sec-link">Ver todas →</div>
+</div>
+
+<div class="bolos">
+  <div class="bolo" onclick="abrirModal('Carmona','Boda','8','Ago','21:00h','1.200€','1.092€','364€')">
+    <div class="bolo-acento"></div>
+    <div class="bolo-body">
+      <div class="bolo-fecha-col">
+        <div class="bolo-dia-n">8</div>
+        <div class="bolo-dia-m">Ago</div>
+      </div>
+      <div class="bolo-sep"></div>
+      <div class="bolo-info">
+        <div class="bolo-lugar">Carmona</div>
+        <div class="bolo-meta">Sábado · 21:00h</div>
+        <div class="bolo-badge">Boda</div>
+      </div>
+      <div class="bolo-precio-col">
+        <div class="bolo-precio">1.200€</div>
+        <div class="bolo-gan">364€/comp.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bolo" onclick="abrirModal('El Palmar','Chiringuito','15','Ago','22:00h','800€','728€','242€')">
+    <div class="bolo-acento" style="background:#4caf72"></div>
+    <div class="bolo-body">
+      <div class="bolo-fecha-col">
+        <div class="bolo-dia-n">15</div>
+        <div class="bolo-dia-m">Ago</div>
+      </div>
+      <div class="bolo-sep"></div>
+      <div class="bolo-info">
+        <div class="bolo-lugar">El Palmar</div>
+        <div class="bolo-meta">Sábado · 22:00h</div>
+        <div class="bolo-badge" style="color:#4caf72;background:rgba(76,175,114,0.1)">Chiringuito</div>
+      </div>
+      <div class="bolo-precio-col">
+        <div class="bolo-precio">800€</div>
+        <div class="bolo-gan">242€/comp.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bolo" onclick="abrirModal('Dos Hermanas','Feria','22','Ago','20:30h','950€','864€','288€')">
+    <div class="bolo-acento" style="background:#e8a838"></div>
+    <div class="bolo-body">
+      <div class="bolo-fecha-col">
+        <div class="bolo-dia-n">22</div>
+        <div class="bolo-dia-m">Ago</div>
+      </div>
+      <div class="bolo-sep"></div>
+      <div class="bolo-info">
+        <div class="bolo-lugar">Dos Hermanas</div>
+        <div class="bolo-meta">Sábado · 20:30h</div>
+        <div class="bolo-badge" style="color:#e8a838;background:rgba(232,168,56,0.1)">Feria</div>
+      </div>
+      <div class="bolo-precio-col">
+        <div class="bolo-precio">950€</div>
+        <div class="bolo-gan">288€/comp.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="pb"></div>
+
+<!-- MODAL -->
+<div class="overlay" id="ov" onclick="cerrar(event)">
+  <div class="modal">
+    <div class="modal-drag"></div>
+    <div class="modal-inner">
+      <div class="modal-badge" id="m-badge">Boda</div>
+      <div class="modal-titulo" id="m-titulo">Carmona</div>
+      <div class="modal-meta">
+        <span id="m-fecha">📅 Sábado 8 de agosto · 2026</span>
+        <span id="m-hora">🕘 21:00h</span>
+      </div>
+      <div class="modal-div"></div>
+      <div class="m-fila"><span class="m-label">Precio contratado</span><span class="m-val d" id="m-precio">1.200,00 €</span></div>
+      <div class="m-fila"><span class="m-label">Fondo grupo (9%)</span><span class="m-val" id="m-fondo">108,00 €</span></div>
+      <div class="m-fila"><span class="m-label">Ganancia neta</span><span class="m-val" id="m-gan">1.092,00 €</span></div>
+      <div class="m-fila"><span class="m-label">Por componente</span><span class="m-val d" id="m-comp">364,00 €</span></div>
+      <div class="modal-div"></div>
+      <div class="modal-acciones">
+        <div class="m-btn gold">✏️ Editar</div>
+        <div class="m-btn">📋 Duplicar</div>
+        <div class="wa-btn">📲 Plantillas WhatsApp</div>
+        <div class="m-btn red">🗑️ Eliminar</div>
+        <div class="m-btn">📅 Google Cal</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bnav">
+  <div class="ni on"><div class="ni-ico">📅</div><div class="ni-lbl">Agenda</div></div>
+  <div class="ni"><div class="ni-ico">📊</div><div class="ni-lbl">Resumen</div></div>
+  <div class="ni"><div class="ni-ico">📈</div><div class="ni-lbl">Informes</div></div>
+  <div class="ni"><div class="ni-ico">☰</div><div class="ni-lbl">Más</div></div>
+</div>
+
+<script>
+// Calendario agosto 2026 (empieza sábado)
+var grid=document.getElementById('grid');
+var bolos=[8,15,22,29];
+// 1 ago 2026 = sábado → offset L=0...S=5, D=6 → pJS=6 → pLun=(6+6)%7=5
+for(var i=0;i<5;i++){var e=document.createElement('div');e.className='dia';grid.appendChild(e);}
+for(var d=1;d<=31;d++){
+  var el=document.createElement('div');
+  var cls='dia mes'+(bolos.includes(d)?' bolo':'');
+  el.className=cls;el.textContent=d;
+  grid.appendChild(el);
+}
+
+function abrirModal(lugar,tipo,dia,mes,hora,precio,gan,comp){
+  document.getElementById('m-badge').textContent=tipo;
+  document.getElementById('m-titulo').textContent=lugar;
+  document.getElementById('m-fecha').textContent='📅 '+dia+' de '+mes;
+  document.getElementById('m-hora').textContent='🕘 '+hora;
+  document.getElementById('m-precio').textContent=precio;
+  document.getElementById('m-gan').textContent=gan;
+  document.getElementById('m-comp').textContent=comp;
+  document.getElementById('ov').classList.add('on');
+}
+function cerrar(e){if(e.target.id==='ov')document.getElementById('ov').classList.remove('on');}
+</script>
+</body>
+</html>
